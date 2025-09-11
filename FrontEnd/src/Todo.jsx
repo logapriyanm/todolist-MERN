@@ -12,7 +12,7 @@ const Todo = () => {
     const [editTitle, setEditTitle] = useState("");
     const [editDescription, setEditDescription] = useState("");
 
-    const apiUrl = "http://localhost:8000";
+    const apiUrl = "https://todolist-mern-backend-bur5.onrender.com";
 
 
     const handleSubmit = () => {
