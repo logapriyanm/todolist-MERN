@@ -7,7 +7,10 @@ require("dotenv").config(); // if you are using .env locally
 // Create an instance of Express
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "https://todolist-mern-e0un.onrender.com",
+}));
+
 
 // MongoDB connection
 mongoose

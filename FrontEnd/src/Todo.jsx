@@ -21,25 +21,21 @@ const Todo = () => {
         if (title.trim() !== '' && description.trim() !== '') {
             fetch(apiUrl + "/todos", {
                 method: "POST",
-                headers: {
-                    'Content-type': 'application/json'
-                },
+                headers: { "Content-type": "application/json" },
                 body: JSON.stringify({ title, description })
-            }).then((res) => {
-                if (res.ok) {
-                    setTodos([...todos, { title, description }])
+            })
+                .then((res) => res.json())
+                .then((newTodo) => {
+                    setTodos([...todos, newTodo]); // use actual response with _id
                     setTitle("");
                     setDescription("");
-                    setMessage("Task added Successfully")
-                    setTimeout(() => {
-                        setMessage("")
-                    }, 3000)
-                } else {
-                    setError("Unable to create Task")
-                }
-            }).catch(() => {
-                setError("Unable to create your Task")
-            })
+                    setMessage("Task added Successfully");
+                    setTimeout(() => setMessage(""), 3000);
+                })
+                .catch(() => {
+                    setError("Unable to create your Task");
+                });
+
 
         }
     }
@@ -136,7 +132,7 @@ const Todo = () => {
                 </div>
                 <div className="m-2  " >
                     <h3 className="text-xl font-medium">Tasks</h3>
-                  
+
                     <ul className=" ">
                         {
                             todos.map((item) =>
