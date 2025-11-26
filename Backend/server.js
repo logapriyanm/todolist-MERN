@@ -7,36 +7,11 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 
-// Allowed origins (add any frontend domains you use)
-const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:5173",
-  // add your deployed frontend URL(s) here:
-  "https://todolist-mern-e0un.onrender.com",
-  "https://your-other-frontend.example.com"
-];
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+app.use(cors({
+  origin: FRONTEND_URL,
+}));
 
-// CORS options
-const corsOptions = {
-  origin: function (origin, callback) {
-    // allow requests with no origin (like curl, Postman, or server-to-server)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn("Blocked CORS request from origin:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-// enable preflight for all routes
-app.options("*", cors(corsOptions));
-
-// --- rest of your code unchanged ---
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Database connected"))
@@ -44,6 +19,7 @@ mongoose.connect(process.env.MONGO_URI)
     console.error("❌ MongoDB connection error:", err.message || err);
     process.exit(1);
   });
+
 
 // Schema
 const todoSchema = new mongoose.Schema({
@@ -60,6 +36,7 @@ app.post("/todos", async (req, res) => {
     const { title, description } = req.body;
     const newTodo = new todoModel({ title, description });
     await newTodo.save();
+    // return the created document
     return res.status(201).json(newTodo);
   } catch (error) {
     console.error(error);
