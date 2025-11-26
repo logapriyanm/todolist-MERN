@@ -18,6 +18,7 @@ const Todo = () => {
     getItems();
   }, []);
 
+
   const getItems = async () => {
     try {
       const res = await fetch(`${apiUrl}/todos`);
@@ -150,14 +151,14 @@ const Todo = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   type="text"
                   value={title}
-                  className="w-full px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white bg-white/20 placeholder-white/70 text-white backdrop-blur-sm"
+                  className="w-full px-4 py-3 rounded-lg border-0  bg-white/20 placeholder-white/70 text-white backdrop-blur-sm"
                 />
                 <input
                   placeholder="Task description..."
                   onChange={(e) => setDescription(e.target.value)}
                   type="text"
                   value={description}
-                  className="w-full px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white bg-white/20 placeholder-white/70 text-white backdrop-blur-sm"
+                  className="w-full px-4 py-3 rounded-lg border-0  bg-white/20 placeholder-white/70 text-white backdrop-blur-sm"
                 />
               </div>
               <button
@@ -241,7 +242,7 @@ const Todo = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>Built with React & MERN Stack • {new Date().getFullYear()}</p>
+          <p>Built with  MERN Stack • {new Date().getFullYear()}</p>
         </div>
       </div>
     </section>
