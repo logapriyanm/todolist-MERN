@@ -1,91 +1,53 @@
-// server.js
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
+const http = require("http");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const connectDB = require("./config/db");
+const { errorHandler } = require("./middleware/errorMiddleware");
+const { initSocket } = require("./utils/socket");
+
+// Connect to Database
+connectDB();
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+initSocket(server);
+
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
-app.use(cors({
-  origin: FRONTEND_URL,
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Database connected"))
-  .catch(err => {
-    console.error("❌ MongoDB connection error:", err.message || err);
-    process.exit(1);
-  });
+// Routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/todos", require("./routes/todoRoutes"));
 
+// Error Handler
+app.use(errorHandler);
 
-// Schema
-const todoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, default: "" },
-}, { timestamps: true });
+const PORT = process.env.PORT || 5000;
 
-// Model
-const todoModel = mongoose.model("Todo", todoSchema);
-
-// Create a new todo
-app.post("/todos", async (req, res) => {
-  try {
-    const { title, description } = req.body;
-    const newTodo = new todoModel({ title, description });
-    await newTodo.save();
-    // return the created document
-    return res.status(201).json(newTodo);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message || "Server error" });
-  }
-});
-
-// Get all todos
-app.get("/todos", async (req, res) => {
-  try {
-    const todos = await todoModel.find().sort({ createdAt: -1 });
-    return res.json(todos);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message || "Server error" });
-  }
-});
-
-// Update todo
-app.put("/todos/:id", async (req, res) => {
-  try {
-    const { title, description } = req.body;
-    const updatedTodo = await todoModel.findByIdAndUpdate(
-      req.params.id,
-      { title, description },
-      { new: true, runValidators: true }
-    );
-    if (!updatedTodo) return res.status(404).json({ message: "Todo not found" });
-    return res.json(updatedTodo);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message || "Server error" });
-  }
-});
-
-// Delete todo
-app.delete("/todos/:id", async (req, res) => {
-  try {
-    const deleted = await todoModel.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Todo not found" });
-    return res.status(200).json({ message: "Todo deleted" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message || "Server error" });
-  }
-});
-
-// Start the server
-const PORT = parseInt(process.env.PORT, 10) || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
