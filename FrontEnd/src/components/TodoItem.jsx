@@ -17,7 +17,7 @@ import { useSwipeable } from 'react-swipeable';
 import { gsap } from 'gsap';
 import { cn } from '../utils/cn';
 
-const TodoItem = ({ todo, isTrash }) => {
+const TodoItem = ({ todo, isTrash, isActive }) => {
     const { updateTodo, deleteTodo, restoreTodo, permanentlyDeleteTodo } = useTodos();
     const controls = useAnimation();
     const itemRef = useRef(null);

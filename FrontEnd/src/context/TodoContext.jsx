@@ -28,7 +28,10 @@ export const TodoProvider = ({ children }) => {
         if (user) {
             fetchTodos();
             const socketUrl = import.meta.env.VITE_BACKEND_URL;
-            const newSocket = io(socketUrl);
+            const newSocket = io(socketUrl, {
+                transports: ['websocket', 'polling'],
+                withCredentials: true
+            });
             setSocket(newSocket);
 
             newSocket.on('todo_created', (newTodo) => {
