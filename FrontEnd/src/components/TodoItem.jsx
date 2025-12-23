@@ -7,7 +7,10 @@ import {
     RiTimeLine,
     RiRefreshLine,
     RiCheckLine,
-    RiGoogleFill
+    RiGoogleFill,
+    RiFileList2Line,
+    RiPriceTag3Line,
+    RiFlag2Line
 } from 'react-icons/ri';
 import { motion, useAnimation } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
