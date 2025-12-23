@@ -35,7 +35,7 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
                 animate={{ y: '0%' }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="relative w-full max-w-xl bg-white border-t border-border rounded-t-[40px] p-8 pb-14 shadow-2xl safe-bottom focus:outline-none"
+                className="relative w-full max-w-xl bg-white border-t border-border rounded-t-3xl p-5 pb-10 shadow-2xl safe-bottom focus:outline-none"
             >
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-slate-200 rounded-full" />
 

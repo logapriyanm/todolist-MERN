@@ -44,15 +44,17 @@ const Dashboard = () => {
             setFilter={setFilter}
             onAddClick={() => setIsAddOpen(true)}
         >
-            <header className="mb-8">
-                <div className="flex items-center justify-between mb-6">
+            <header className="mb-6">
+                <div className="flex items-center justify-between mb-4">
                     <div>
-                        <h2 className="text-muted-foreground font-medium text-sm">Good morning, {user?.name.split(' ')[0]} ☀️</h2>
-                        <h1 className="text-3xl font-bold tracking-tight">
+                        <h2 className="text-muted-foreground font-medium text-[10px] uppercase tracking-wider">Good morning, {user?.name.split(' ')[0]} ☀️</h2>
+                        <h1 className="text-2xl font-bold tracking-tight">
                             {filter === 'stats' ? 'Analytics' : filter === 'profile' ? 'Settings' : 'Your Today'}
                         </h1>
                     </div>
-                    <ProgressRing progress={completionRate} />
+                    <div className="scale-90 origin-right">
+                        <ProgressRing progress={completionRate} />
+                    </div>
                 </div>
 
                 <div className="flex gap-4 items-center">
@@ -63,7 +65,7 @@ const Dashboard = () => {
                             placeholder="Find a task..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white border border-border rounded-2xl pl-12 pr-4 py-4 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm h-14"
+                            className="w-full bg-white border border-border rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm h-12"
                         />
                     </div>
                 </div>
@@ -75,7 +77,7 @@ const Dashboard = () => {
                         key={opt.id}
                         onClick={() => setFilter(opt.id)}
                         className={cn(
-                            "px-5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all border",
+                            "px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all border",
                             filter === opt.id
                                 ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
                                 : "bg-white text-muted-foreground border-border hover:bg-muted hover:text-foreground"
@@ -89,39 +91,39 @@ const Dashboard = () => {
             <div className="space-y-2 pb-24">
                 {filter === 'stats' ? (
                     <div className="space-y-6">
-                        <div className="bg-primary/5 border border-primary/10 p-8 rounded-[40px] text-center">
-                            <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-2">Completion Rate</h3>
-                            <div className="flex justify-center my-6">
+                        <div className="bg-primary/5 border border-primary/10 p-6 rounded-3xl text-center">
+                            <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Completion Rate</h3>
+                            <div className="flex justify-center my-4 scale-90">
                                 <ProgressRing progress={completionRate} />
                             </div>
-                            <p className="text-muted-foreground font-medium">You've completed {todos.filter(t => t.status === 'Done' && !t.isDeleted).length} out of {activeTodosCount} tasks today.</p>
+                            <p className="text-muted-foreground text-xs font-medium">You've completed {todos.filter(t => t.status === 'Done' && !t.isDeleted).length} out of {activeTodosCount} tasks today.</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-card border border-border p-6 rounded-3xl">
+                            <div className="bg-card border border-border p-5 rounded-2xl">
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Total</p>
-                                <p className="text-2xl font-black">{activeTodosCount}</p>
+                                <p className="text-xl font-black">{activeTodosCount}</p>
                             </div>
-                            <div className="bg-card border border-border p-6 rounded-3xl">
+                            <div className="bg-card border border-border p-5 rounded-2xl">
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Done</p>
-                                <p className="text-2xl font-black text-primary">{todos.filter(t => t.status === 'Done' && !t.isDeleted).length}</p>
+                                <p className="text-xl font-black text-primary">{todos.filter(t => t.status === 'Done' && !t.isDeleted).length}</p>
                             </div>
                         </div>
                     </div>
                 ) : filter === 'profile' ? (
                     <div className="space-y-6">
-                        <div className="bg-white border border-border p-8 rounded-[40px] flex flex-col items-center shadow-xl shadow-black/5">
-                            <div className="w-24 h-24 bg-primary rounded-[32px] flex items-center justify-center text-white text-4xl font-black mb-6 shadow-2xl shadow-primary/20 rotate-3">
+                        <div className="bg-white border border-border p-6 rounded-3xl flex flex-col items-center shadow-xl shadow-black/5">
+                            <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center text-white text-3xl font-black mb-4 shadow-2xl shadow-primary/20 rotate-3">
                                 {user?.name.charAt(0)}
                             </div>
-                            <h2 className="text-2xl font-black tracking-tight">{user?.name}</h2>
-                            <p className="text-muted-foreground font-medium mb-8">{user?.email}</p>
+                            <h2 className="text-xl font-black tracking-tight">{user?.name}</h2>
+                            <p className="text-muted-foreground text-sm font-medium mb-6">{user?.email}</p>
 
                             <button
                                 onClick={logout}
-                                className="w-full bg-slate-50 border border-border text-destructive font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-destructive/5 transition-colors"
+                                className="w-full bg-slate-50 border border-border text-destructive font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-destructive/5 transition-colors text-sm"
                             >
-                                <RiLogoutBoxLine className="text-xl" />
+                                <RiLogoutBoxLine className="text-lg" />
                                 Sign Out
                             </button>
                         </div>
@@ -135,12 +137,12 @@ const Dashboard = () => {
                         <TodoItem key={todo._id} todo={todo} isTrash={filter === 'trash'} />
                     ))
                 ) : (
-                    <div className="text-center py-24 bg-card rounded-[40px] border border-dashed border-border flex flex-col items-center justify-center gap-4">
-                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-border">
-                            {search ? <RiSearchLine className="text-3xl text-muted-foreground/30" /> : <RiFileList2Line className="text-3xl text-muted-foreground/30" />}
+                    <div className="text-center py-16 bg-card rounded-3xl border border-dashed border-border flex flex-col items-center justify-center gap-4">
+                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-border">
+                            {search ? <RiSearchLine className="text-2xl text-muted-foreground/30" /> : <RiFileList2Line className="text-2xl text-muted-foreground/30" />}
                         </div>
                         <div className="space-y-1">
-                            <p className="text-muted-foreground font-medium">
+                            <p className="text-muted-foreground text-sm font-medium">
                                 {search ? `No results for "${search}"` : 'No tasks found'}
                             </p>
                             {search && (

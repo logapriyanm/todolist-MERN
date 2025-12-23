@@ -78,7 +78,7 @@ const Layout = ({ children, currentFilter, setFilter, onAddClick }) => {
 
             {/* Main Content Area */}
             <main className="flex-1 md:ml-72 min-h-screen">
-                <div className="max-w-5xl mx-auto px-6 py-10 md:py-16">
+                <div className="max-w-5xl mx-auto px-4 py-6 md:px-6 md:py-16">
                     {children}
                 </div>
             </main>

@@ -74,7 +74,7 @@ const TodoItem = ({ todo, isTrash }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
-            className="group relative bg-white border border-border rounded-2xl p-4 flex items-center gap-4 transition-all active:scale-[0.98] hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20"
+            className="group relative bg-white border border-border rounded-xl p-3 flex items-center gap-3 transition-all active:scale-[0.98] hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20"
         >
             {!isTrash && (
                 <button

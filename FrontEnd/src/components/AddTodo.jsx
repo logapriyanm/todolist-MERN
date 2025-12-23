@@ -36,20 +36,20 @@ const AddTodo = ({ onComplete }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
+            <div className="space-y-1">
                 <input
                     autoFocus
                     type="text"
                     placeholder="Task name"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-2xl font-bold placeholder:text-muted-foreground/30 px-0 outline-none"
+                    className="w-full bg-transparent border-none focus:ring-0 text-xl font-bold placeholder:text-muted-foreground/30 px-0 outline-none"
                 />
                 <textarea
                     placeholder="Description (optional)"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-lg text-muted-foreground placeholder:text-muted-foreground/30 px-0 min-h-[100px] resize-none outline-none"
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30 px-0 min-h-[80px] resize-none outline-none"
                 />
             </div>
 
@@ -81,14 +81,14 @@ const AddTodo = ({ onComplete }) => {
                             type="button"
                             onClick={() => setPriority(p.id)}
                             className={cn(
-                                "flex-1 py-3 rounded-2xl border transition-all flex flex-col items-center gap-1 touch-target",
+                                "flex-1 py-2.5 rounded-xl border transition-all flex flex-col items-center gap-1 touch-target",
                                 priority === p.id
                                     ? "bg-primary/10 border-primary text-primary"
                                     : "bg-surface border-border text-muted-foreground"
                             )}
                         >
-                            <div className={cn("w-2 h-2 rounded-full", p.color)} />
-                            <span className="text-[10px] font-bold uppercase">{p.id}</span>
+                            <div className={cn("w-1.5 h-1.5 rounded-full", p.color)} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">{p.id}</span>
                         </button>
                     ))}
                 </div>
@@ -122,9 +122,9 @@ const AddTodo = ({ onComplete }) => {
                 <button
                     type="submit"
                     disabled={!title.trim()}
-                    className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold h-14 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
+                    className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold h-12 rounded-xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 text-sm"
                 >
-                    <RiAddLine className="text-2xl" />
+                    <RiAddLine className="text-xl" />
                     Create Task
                 </button>
             </div>
