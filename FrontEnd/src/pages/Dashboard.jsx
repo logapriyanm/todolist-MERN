@@ -20,7 +20,6 @@ const Dashboard = () => {
         if (search && !todo.title.toLowerCase().includes(search.toLowerCase())) return false;
         if (filter === 'active') return todo.status !== 'Done' && !todo.isDeleted;
         if (filter === 'completed') return todo.status === 'Done' && !todo.isDeleted;
-        if (filter === 'priority') return todo.priority === 'High' || todo.priority === 'Critical';
         if (filter === 'trash') return todo.isDeleted === true;
         return !todo.isDeleted;
     });
@@ -34,7 +33,6 @@ const Dashboard = () => {
         { id: 'all', label: 'All' },
         { id: 'active', label: 'Active' },
         { id: 'completed', label: 'Done' },
-        { id: 'priority', label: 'High' },
         { id: 'trash', label: 'Trash' },
     ];
 

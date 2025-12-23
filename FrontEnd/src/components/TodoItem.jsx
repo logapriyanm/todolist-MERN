@@ -59,13 +59,6 @@ const TodoItem = ({ todo, isTrash }) => {
         await deleteTodo(todo._id);
     };
 
-    const priorityColors = {
-        Low: 'text-emerald-600 bg-emerald-50 border-emerald-100',
-        Medium: 'text-blue-600 bg-blue-50 border-blue-100',
-        High: 'text-orange-600 bg-orange-50 border-orange-100',
-        Critical: 'text-rose-600 bg-rose-50 border-rose-100',
-    };
-
     return (
         <motion.div
             {...handlers}
@@ -99,9 +92,6 @@ const TodoItem = ({ todo, isTrash }) => {
                     {todo.title}
                 </h3>
                 <div className="flex items-center gap-3 mt-1">
-                    <span className={cn("text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider", priorityColors[todo.priority])}>
-                        {todo.priority}
-                    </span>
                     {todo.dueDate && (
                         <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-semibold">
                             <RiTimeLine className="text-sm" />

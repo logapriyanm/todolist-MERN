@@ -29,7 +29,6 @@ const Layout = ({ children, currentFilter, setFilter, onAddClick }) => {
                         { id: 'all', label: 'All Tasks', icon: RiCalendarTodoLine },
                         { id: 'active', label: 'Active', icon: RiFileList2Line },
                         { id: 'completed', label: 'Done', icon: RiBarChartLine },
-                        { id: 'priority', label: 'High Priority', icon: RiFileList2Line },
                         { id: 'trash', label: 'Trash', icon: RiDeleteBinLine },
                     ].map((item) => (
                         <button

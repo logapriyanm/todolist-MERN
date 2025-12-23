@@ -6,24 +6,16 @@ import { cn } from '../utils/cn';
 const AddTodo = ({ onComplete }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [priority, setPriority] = useState('Medium');
     const [dueDate, setDueDate] = useState('');
     const [attachments, setAttachments] = useState([]);
     const { addTodo } = useTodos();
-
-    const priorities = [
-        { id: 'Low', color: 'bg-emerald-500' },
-        { id: 'Medium', color: 'bg-amber-500' },
-        { id: 'High', color: 'bg-orange-500' },
-        { id: 'Critical', color: 'bg-destructive' },
-    ];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) return;
 
         try {
-            await addTodo({ title, description, priority, dueDate, attachments });
+            await addTodo({ title, description, dueDate, attachments });
             setTitle('');
             onComplete();
         } catch (error) { }
@@ -71,28 +63,6 @@ const AddTodo = ({ onComplete }) => {
                     ))}
                 </div>
             )}
-
-            <div className="space-y-4">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Priority</p>
-                <div className="flex gap-2">
-                    {priorities.map(p => (
-                        <button
-                            key={p.id}
-                            type="button"
-                            onClick={() => setPriority(p.id)}
-                            className={cn(
-                                "flex-1 py-2.5 rounded-xl border transition-all flex flex-col items-center gap-1 touch-target",
-                                priority === p.id
-                                    ? "bg-primary/10 border-primary text-primary"
-                                    : "bg-surface border-border text-muted-foreground"
-                            )}
-                        >
-                            <div className={cn("w-1.5 h-1.5 rounded-full", p.color)} />
-                            <span className="text-[9px] font-bold uppercase tracking-wider">{p.id}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
 
             <div className="flex items-center gap-4 pt-4">
                 <div className="flex items-center">
