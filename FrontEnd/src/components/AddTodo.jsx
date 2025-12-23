@@ -103,12 +103,13 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
                 </div>
                 <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Due Time</label>
-                    <div className="flex items-center gap-2">
-                        <div className="relative flex-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative flex-1 min-w-[140px]">
                             <RiTimeLine className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                             <div className="flex bg-slate-50 rounded-3xl items-center border-2 border-transparent focus-within:border-primary/20 transition-all overflow-hidden pl-10">
                                 <input
                                     type="text"
+                                    inputMode="numeric"
                                     value={hour}
                                     onChange={(e) => {
                                         const val = e.target.value.replace(/\D/g, '').slice(0, 2);
@@ -118,12 +119,13 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
                                         if (!hour || parseInt(hour) === 0) setHour('12');
                                         else setHour(hour.padStart(2, '0'));
                                     }}
-                                    className="w-12 bg-transparent p-5 text-center font-bold text-slate-800 outline-none"
+                                    className="w-10 bg-transparent py-5 px-1 text-center font-bold text-slate-800 outline-none"
                                     placeholder="HH"
                                 />
-                                <span className="font-bold text-slate-400">:</span>
+                                <span className="font-bold text-slate-400 px-0.5">:</span>
                                 <input
                                     type="text"
+                                    inputMode="numeric"
                                     value={minute}
                                     onChange={(e) => {
                                         const val = e.target.value.replace(/\D/g, '').slice(0, 2);
@@ -133,7 +135,7 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
                                         if (!minute) setMinute('00');
                                         else setMinute(minute.padStart(2, '0'));
                                     }}
-                                    className="w-12 bg-transparent p-5 text-center font-bold text-slate-800 outline-none"
+                                    className="w-10 bg-transparent py-5 px-1 text-center font-bold text-slate-800 outline-none"
                                     placeholder="MM"
                                 />
                             </div>
