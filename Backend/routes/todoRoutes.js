@@ -11,6 +11,9 @@ const {
   permanentlyDeleteTodo
 } = require("../controllers/todoController");
 const { protect } = require("../middleware/authMiddleware");
+
+router.use(protect); // Protect all routes below
+
 router.route("/").get(getTodos).post(createTodo);
 router.route("/reorder").put(reorderTodos);
 router.route("/:id").get(getTodoById).put(updateTodo).delete(deleteTodo);

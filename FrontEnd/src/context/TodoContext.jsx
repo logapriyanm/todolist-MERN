@@ -32,7 +32,10 @@ export const TodoProvider = ({ children }) => {
             setSocket(newSocket);
 
             newSocket.on('todo_created', (newTodo) => {
-                setTodos((prev) => [newTodo, ...prev]);
+                setTodos((prev) => {
+                    if (prev.find(t => t._id === newTodo._id)) return prev;
+                    return [newTodo, ...prev];
+                });
             });
 
             newSocket.on('todo_updated', (updatedTodo) => {
@@ -51,6 +54,17 @@ export const TodoProvider = ({ children }) => {
                 setTodos((prev) => prev.filter((t) => t._id !== id));
             });
 
+            newSocket.on('todos_reordered', (newOrder) => {
+                setTodos(prev => {
+                    const updated = [...prev];
+                    newOrder.forEach(item => {
+                        const index = updated.findIndex(t => t._id === item.id);
+                        if (index !== -1) updated[index].order = item.order;
+                    });
+                    return updated.sort((a, b) => a.order - b.order);
+                });
+            });
+
             return () => newSocket.close();
         }
     }, [user]);
@@ -58,6 +72,7 @@ export const TodoProvider = ({ children }) => {
     const addTodo = async (todoData) => {
         try {
             const { data } = await api.post('/todos', todoData);
+            // Socket will handle state update
             return data;
         } catch (error) {
             toast.error('Failed to add todo');
@@ -68,6 +83,7 @@ export const TodoProvider = ({ children }) => {
     const updateTodo = async (id, updateData) => {
         try {
             const { data } = await api.put(`/todos/${id}`, updateData);
+            // Socket will handle state update
             return data;
         } catch (error) {
             toast.error('Failed to update todo');

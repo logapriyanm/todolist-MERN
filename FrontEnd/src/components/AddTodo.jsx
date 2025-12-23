@@ -61,20 +61,23 @@ const AddTodo = ({ onComplete }) => {
                             className={cn(
                                 "w-full flex items-center justify-between p-5 rounded-3xl border transition-all group",
                                 category === cat.id
-                                    ? "bg-primary/5 border-primary/20"
-                                    : "bg-slate-50 border-transparent hover:border-slate-200"
+                                    ? "bg-primary border-primary text-white"
+                                    : "bg-slate-50 border-transparent text-slate-800 hover:border-slate-200"
                             )}
                         >
                             <div className="flex items-center gap-4">
-                                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm", cat.bg)}>
-                                    <cat.icon className={cn("text-xl", cat.color)} />
+                                <div className={cn(
+                                    "w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm",
+                                    category === cat.id ? "bg-white/20" : cat.bg
+                                )}>
+                                    <cat.icon className={cn("text-xl", category === cat.id ? "text-white" : cat.color)} />
                                 </div>
                                 <div className="text-left">
-                                    <p className="font-black text-slate-800">{cat.id}</p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">3 on this week</p>
+                                    <p className={cn("font-black", category === cat.id ? "text-white" : "text-slate-800")}>{cat.id}</p>
+                                    <p className={cn("text-[10px] font-bold uppercase tracking-widest", category === cat.id ? "text-white/60" : "text-slate-400")}>3 on this week</p>
                                 </div>
                             </div>
-                            <RiAddLine className={cn("text-xl transition-transform group-hover:scale-110", category === cat.id ? "text-primary" : "text-slate-300")} />
+                            <RiAddLine className={cn("text-xl transition-transform group-hover:scale-110", category === cat.id ? "text-white" : "text-slate-300")} />
                         </button>
                     ))}
                 </div>
