@@ -63,7 +63,7 @@ const getTodoById = async (req, res) => {
 // @access  Private
 const createTodo = async (req, res) => {
   try {
-    const { title, description, dueDate, dueTime, tags } = req.body;
+    const { title, description, dueDate, dueTime, category, tags } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
@@ -79,6 +79,7 @@ const createTodo = async (req, res) => {
       description,
       dueDate,
       dueTime,
+      category,
       tags,
       order,
     });

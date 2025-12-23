@@ -59,95 +59,87 @@ const TodoItem = ({ todo, isTrash }) => {
         await deleteTodo(todo._id);
     };
 
-    const getGoogleCalendarLink = () => {
-        const title = encodeURIComponent(todo.title);
-        const description = encodeURIComponent(todo.description || '');
-        let dates = '';
-
-        if (todo.dueDate) {
-            const date = new Date(todo.dueDate);
-            const dateStr = date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-            dates = `${dateStr}/${dateStr}`;
-        }
-
-        return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${description}&dates=${dates}`;
+    const categories = {
+        Work: { icon: RiFileList2Line, color: 'text-indigo-600' },
+        Food: { icon: RiPriceTag3Line, color: 'text-orange-500' },
+        Sport: { icon: RiFlag2Line, color: 'text-emerald-500' },
+        Idea: { icon: RiFlag2Line, color: 'text-amber-500' }, // Placeholder icons
+        Music: { icon: RiFlag2Line, color: 'text-purple-500' },
     };
+
+    const category = categories[todo.category] || categories.Work;
 
     return (
         <motion.div
-            {...handlers}
-            ref={itemRef}
             layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            className="group relative bg-white border border-border rounded-xl p-3 flex items-center gap-3 transition-all active:scale-[0.98] hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-start gap-4 group relative"
         >
-            {!isTrash && (
-                <button
-                    onClick={handleToggle}
-                    className="touch-target transition-transform active:scale-90"
-                >
-                    {todo.status === 'Done' ? (
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
-                            <RiCheckLine className="text-white text-lg" />
-                        </div>
-                    ) : (
-                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full hover:border-primary transition-colors" />
-                    )}
-                </button>
-            )}
-
-            <div className="flex-1 min-w-0" onClick={() => !isTrash && handleToggle()}>
-                <h3 className={cn(
-                    "font-bold text-base transition-all leading-tight",
-                    todo.status === 'Done' ? "text-muted-foreground line-through opacity-40" : "text-foreground"
-                )}>
-                    {todo.title}
-                </h3>
-                <div className="flex items-center gap-3 mt-1.5">
-                    {todo.dueDate && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
-                            <RiTimeLine className="text-xs" />
-                            {new Date(todo.dueDate).toLocaleDateString()}
-                            {todo.dueTime && <span className="text-primary ml-1">{todo.dueTime}</span>}
-                        </div>
-                    )}
-                    <a
-                        href={getGoogleCalendarLink()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors"
-                    >
-                        <RiGoogleFill className="text-xs" />
-                        Save to Calendar
-                    </a>
-                </div>
+            {/* Time Indicator */}
+            <div className="w-16 pt-3 flex flex-col items-end gap-1 shrink-0">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
+                    {todo.dueTime || '10:30'}
+                </span>
+                <span className="text-[8px] font-bold text-slate-300 uppercase">
+                    1 hour
+                </span>
             </div>
 
-            {isTrash && (
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => { handleVibrate(10); restoreTodo(todo._id); }}
-                        className="touch-target text-slate-400 hover:text-emerald-500 transition-colors bg-slate-50 rounded-xl"
-                        title="Restore"
-                    >
-                        <RiRefreshLine className="text-xl" />
-                    </button>
-                    <button
-                        onClick={() => {
-                            if (window.confirm('Permanently delete?')) {
-                                handleVibrate(50);
-                                permanentlyDeleteTodo(todo._id);
-                            }
-                        }}
-                        className="touch-target text-slate-400 hover:text-destructive transition-colors bg-slate-50 rounded-xl"
-                        title="Delete"
-                    >
-                        <RiDeleteBinLine className="text-xl" />
-                    </button>
+            {/* Timeline Node */}
+            <div className="absolute left-[7px] top-4 w-2 h-2 rounded-full border-2 border-primary bg-white z-10 shadow-sm" />
+
+            {/* Content Card */}
+            <div
+                className={cn(
+                    "flex-1 p-5 rounded-[24px] border transition-all relative overflow-hidden",
+                    isActive
+                        ? "bg-primary text-white border-primary shadow-2xl shadow-primary/30 active:scale-95"
+                        : "bg-white text-slate-900 border-slate-100 shadow-sm hover:border-slate-200"
+                )}
+            >
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                        {!isTrash && (
+                            <button
+                                onClick={handleToggle}
+                                className={cn(
+                                    "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
+                                    todo.status === 'Done'
+                                        ? "bg-white border-white text-primary"
+                                        : isActive ? "border-white/30" : "border-slate-200"
+                                )}
+                            >
+                                {todo.status === 'Done' && <RiCheckLine className="text-lg font-bold" />}
+                            </button>
+                        )}
+                        <h3 className={cn(
+                            "font-bold text-sm leading-tight",
+                            todo.status === 'Done' && "line-through opacity-50"
+                        )}>
+                            {todo.title}
+                        </h3>
+                    </div>
                 </div>
-            )}
+
+                <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                        <category.icon className={cn("text-xs", isActive ? "text-white/70" : category.color)} />
+                        <span className={cn("text-[10px] font-bold", isActive ? "text-white/60" : "text-slate-400")}>
+                            {todo.dueTime || '10:30'} - 11:30
+                        </span>
+                    </div>
+                    {isTrash && (
+                        <button onClick={handleDelete} className="text-rose-500 hover:scale-110 transition-transform">
+                            <RiDeleteBinLine className="text-lg" />
+                        </button>
+                    )}
+                </div>
+
+                {isActive && (
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12 blur-2xl pointer-events-none" />
+                )}
+            </div>
         </motion.div>
     );
 };

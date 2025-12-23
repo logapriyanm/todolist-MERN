@@ -26,6 +26,10 @@ const todoSchema = new mongoose.Schema(
     dueTime: {
       type: String,
     },
+    category: {
+      type: String,
+      default: 'Work',
+    },
     reminder: {
       type: Date,
     },

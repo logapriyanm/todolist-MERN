@@ -15,6 +15,7 @@ const Dashboard = () => {
     const [search, setSearch] = useState('');
     const [isAddOpen, setIsAddOpen] = useState(false);
     const { user, logout } = useAuth();
+    const [selectedDate, setSelectedDate] = useState(new Date().getDate());
 
     const filteredTodos = todos.filter(todo => {
         if (search && !todo.title.toLowerCase().includes(search.toLowerCase())) return false;
@@ -24,16 +25,16 @@ const Dashboard = () => {
         return !todo.isDeleted;
     });
 
-    const activeTodosCount = todos.filter(t => !t.isDeleted).length;
-    const completionRate = activeTodosCount > 0
-        ? (todos.filter(t => t.status === 'Done' && !t.isDeleted).length / activeTodosCount) * 100
-        : 0;
+    const activeTodosCount = filteredTodos.length;
 
-    const filterOptions = [
-        { id: 'all', label: 'All' },
-        { id: 'active', label: 'Active' },
-        { id: 'completed', label: 'Done' },
-        { id: 'trash', label: 'Trash' },
+    const days = [
+        { day: 5, label: 'Mon' },
+        { day: 6, label: 'Tue' },
+        { day: 7, label: 'Wed' },
+        { day: 8, label: 'Thur' },
+        { day: 9, label: 'Fri' },
+        { day: 10, label: 'Sat' },
+        { day: 11, label: 'Sun' },
     ];
 
     return (
@@ -42,116 +43,77 @@ const Dashboard = () => {
             setFilter={setFilter}
             onAddClick={() => setIsAddOpen(true)}
         >
-            <header className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 className="text-muted-foreground font-medium text-[10px] uppercase tracking-wider">Good morning, {user?.name.split(' ')[0]} ☀️</h2>
-                        <h1 className="text-2xl font-bold tracking-tight">
-                            {filter === 'stats' ? 'Analytics' : filter === 'profile' ? 'Settings' : 'Your Today'}
-                        </h1>
+            <div className="-mx-4 -mt-6 mb-8 bg-primary p-6 pt-12 rounded-b-[40px] shadow-2xl shadow-primary/20 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24 blur-2xl pointer-events-none" />
+
+                <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="w-10 h-10 flex flex-wrap gap-1 items-center justify-center py-2">
+                            {[1, 2, 3, 4].map(i => <div key={i} className="w-1.5 h-1.5 bg-white rounded-full opacity-60" />)}
+                        </div>
+                        <h2 className="text-white font-bold text-lg">5 May</h2>
+                        <button className="text-white/80 hover:text-white transition-colors">
+                            <RiLogoutBoxLine className="text-xl" onClick={logout} />
+                        </button>
                     </div>
-                    <div className="scale-90 origin-right">
-                        <ProgressRing progress={completionRate} />
+
+                    <div className="flex items-end justify-between">
+                        <div>
+                            <h1 className="text-3xl font-black text-white tracking-tight leading-tight">Today</h1>
+                            <p className="text-white/60 text-xs font-bold uppercase tracking-widest">{activeTodosCount} tasks</p>
+                        </div>
+                        <button
+                            onClick={() => setIsAddOpen(true)}
+                            className="bg-white text-primary font-bold px-6 py-3 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-sm"
+                        >
+                            Add New
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div className="flex gap-4 items-center">
-                    <div className="relative flex-1">
-                        <RiSearchLine className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg" />
-                        <input
-                            type="text"
-                            placeholder="Find a task..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white border border-border rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm h-12"
-                        />
-                    </div>
-                </div>
-            </header>
-
-            <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar mb-4 no-scrollbar">
-                {filterOptions.map(opt => (
+            <div className="flex gap-4 overflow-x-auto pb-6 hide-scrollbar px-1 no-scrollbar mb-4">
+                {days.map(d => (
                     <button
-                        key={opt.id}
-                        onClick={() => setFilter(opt.id)}
+                        key={d.day}
+                        onClick={() => setSelectedDate(d.day)}
                         className={cn(
-                            "px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all border",
-                            filter === opt.id
-                                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-                                : "bg-white text-muted-foreground border-border hover:bg-muted hover:text-foreground"
+                            "flex flex-col items-center justify-center min-w-[64px] h-20 rounded-2xl transition-all border shrink-0",
+                            selectedDate === d.day
+                                ? "bg-primary text-white border-primary shadow-xl shadow-primary/20 scale-110 z-10"
+                                : "bg-white text-muted-foreground border-transparent shadow-sm hover:border-slate-200"
                         )}
                     >
-                        {opt.label}
+                        <span className="text-xl font-black">{d.day}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-tighter opacity-70">{d.label}</span>
                     </button>
                 ))}
             </div>
 
-            <div className="space-y-2 pb-24">
-                {filter === 'stats' ? (
-                    <div className="space-y-6">
-                        <div className="bg-primary/5 border border-primary/10 p-6 rounded-3xl text-center">
-                            <h3 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Completion Rate</h3>
-                            <div className="flex justify-center my-4 scale-90">
-                                <ProgressRing progress={completionRate} />
-                            </div>
-                            <p className="text-muted-foreground text-xs font-medium">You've completed {todos.filter(t => t.status === 'Done' && !t.isDeleted).length} out of {activeTodosCount} tasks today.</p>
-                        </div>
+            <div className="relative pl-8 mt-8 space-y-4 pb-24">
+                {/* Timeline Line */}
+                <div className="absolute left-[7px] top-2 bottom-24 w-0.5 bg-slate-100" />
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-card border border-border p-5 rounded-2xl">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Total</p>
-                                <p className="text-xl font-black">{activeTodosCount}</p>
-                            </div>
-                            <div className="bg-card border border-border p-5 rounded-2xl">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Done</p>
-                                <p className="text-xl font-black text-primary">{todos.filter(t => t.status === 'Done' && !t.isDeleted).length}</p>
-                            </div>
-                        </div>
-                    </div>
-                ) : filter === 'profile' ? (
-                    <div className="space-y-6">
-                        <div className="bg-white border border-border p-6 rounded-3xl flex flex-col items-center shadow-xl shadow-black/5">
-                            <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center text-white text-3xl font-black mb-4 shadow-2xl shadow-primary/20 rotate-3">
-                                {user?.name.charAt(0)}
-                            </div>
-                            <h2 className="text-xl font-black tracking-tight">{user?.name}</h2>
-                            <p className="text-muted-foreground text-sm font-medium mb-6">{user?.email}</p>
-
-                            <button
-                                onClick={logout}
-                                className="w-full bg-slate-50 border border-border text-destructive font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-destructive/5 transition-colors text-sm"
-                            >
-                                <RiLogoutBoxLine className="text-lg" />
-                                Sign Out
-                            </button>
-                        </div>
-                    </div>
-                ) : loading ? (
+                {loading ? (
                     [1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-card rounded-3xl animate-pulse border border-border" />
+                        <div key={i} className="h-24 bg-white rounded-2xl animate-pulse border border-border" />
                     ))
                 ) : filteredTodos.length > 0 ? (
-                    filteredTodos.map((todo) => (
-                        <TodoItem key={todo._id} todo={todo} isTrash={filter === 'trash'} />
+                    filteredTodos.map((todo, idx) => (
+                        <TodoItem
+                            key={todo._id}
+                            todo={todo}
+                            isTrash={filter === 'trash'}
+                            isActive={idx === 1} // Purely for visual demo of the design
+                        />
                     ))
                 ) : (
-                    <div className="text-center py-16 bg-card rounded-3xl border border-dashed border-border flex flex-col items-center justify-center gap-4">
-                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-border">
-                            {search ? <RiSearchLine className="text-2xl text-muted-foreground/30" /> : <RiFileList2Line className="text-2xl text-muted-foreground/30" />}
+                    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200 flex flex-col items-center justify-center gap-4">
+                        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
+                            <RiFileList2Line className="text-3xl text-slate-300" />
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-muted-foreground text-sm font-medium">
-                                {search ? `No results for "${search}"` : 'No tasks found'}
-                            </p>
-                            {search && (
-                                <button
-                                    onClick={() => setSearch('')}
-                                    className="text-primary text-sm font-bold hover:underline"
-                                >
-                                    Clear search
-                                </button>
-                            )}
-                        </div>
+                        <p className="text-slate-400 font-bold text-sm">No tasks for this day</p>
                     </div>
                 )}
             </div>
@@ -159,7 +121,7 @@ const Dashboard = () => {
             <BottomSheet
                 isOpen={isAddOpen}
                 onClose={() => setIsAddOpen(false)}
-                title="Create New Task"
+                title="Create Task"
             >
                 <AddTodo onComplete={() => setIsAddOpen(false)} />
             </BottomSheet>

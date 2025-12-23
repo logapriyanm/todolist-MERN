@@ -8,95 +8,89 @@ const AddTodo = ({ onComplete }) => {
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [dueTime, setDueTime] = useState('');
+    const [category, setCategory] = useState('Work');
     const { addTodo } = useTodos();
+
+    const activityCategories = [
+        { id: 'Idea', icon: RiPriceTag3Line, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { id: 'Food', icon: RiPriceTag3Line, color: 'text-orange-500', bg: 'bg-orange-50' },
+        { id: 'Work', icon: RiFileList2Line, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+        { id: 'Sport', icon: RiFlag2Line, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+        { id: 'Music', icon: RiFlag2Line, color: 'text-purple-500', bg: 'bg-purple-50' },
+    ];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) return;
 
         try {
-            await addTodo({ title, description, dueDate, dueTime });
+            await addTodo({ title, description, dueDate, dueTime, category });
             setTitle('');
             onComplete();
         } catch (error) { }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-1">
-                <input
-                    autoFocus
-                    type="text"
-                    placeholder="Task name"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-xl font-bold placeholder:text-muted-foreground/30 px-0 outline-none"
-                />
-                <textarea
-                    placeholder="Description (optional)"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm text-muted-foreground placeholder:text-muted-foreground/30 px-0 min-h-[80px] resize-none outline-none"
-                />
+        <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="flex gap-4 overflow-x-auto pb-6 hide-scrollbar px-1 no-scrollbar">
+                {[5, 6, 7, 8, 9].map(d => (
+                    <div
+                        key={d}
+                        className={cn(
+                            "flex flex-col items-center justify-center min-w-[64px] h-20 rounded-2xl transition-all border shrink-0",
+                            d === 5 ? "bg-primary text-white border-primary shadow-xl" : "bg-white text-slate-400 border-slate-100"
+                        )}
+                    >
+                        <span className="text-xl font-black">{d}</span>
+                        <span className="text-[10px] font-bold uppercase opacity-60">Mon</span>
+                    </div>
+                ))}
             </div>
 
-            {(dueDate || dueTime) && (
-                <div className="flex flex-wrap gap-2 text-[10px] font-bold">
-                    {dueDate && (
-                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                            <RiCalendarLine />
-                            {new Date(dueDate).toLocaleDateString()}
-                            <button type="button" onClick={() => setDueDate('')} className="hover:text-primary/70 ml-1 text-xs">×</button>
-                        </div>
-                    )}
-                    {dueTime && (
-                        <div className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                            <RiTimeLine className="text-sm" />
-                            {dueTime}
-                            <button type="button" onClick={() => setDueTime('')} className="hover:text-blue-400 ml-1 text-xs">×</button>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            <div className="flex items-center gap-4 pt-4 border-t border-border mt-auto">
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <input
-                            type="date"
-                            id="due-date"
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                            value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
-                        />
-                        <button type="button" className="touch-target text-muted-foreground hover:text-primary transition-colors">
-                            <RiCalendarLine className="text-xl" />
+            <div className="space-y-6">
+                <h3 className="text-lg font-black text-slate-800">Chose activity</h3>
+                <div className="space-y-3">
+                    {activityCategories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => {
+                                setCategory(cat.id);
+                                setTitle(cat.id); // Default title to category for demo
+                            }}
+                            className={cn(
+                                "w-full flex items-center justify-between p-5 rounded-3xl border transition-all group",
+                                category === cat.id
+                                    ? "bg-primary/5 border-primary/20"
+                                    : "bg-slate-50 border-transparent hover:border-slate-200"
+                            )}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm", cat.bg)}>
+                                    <cat.icon className={cn("text-xl", cat.color)} />
+                                </div>
+                                <div className="text-left">
+                                    <p className="font-black text-slate-800">{cat.id}</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">3 on this week</p>
+                                </div>
+                            </div>
+                            <RiAddLine className={cn("text-xl transition-transform group-hover:scale-110", category === cat.id ? "text-primary" : "text-slate-300")} />
                         </button>
-                    </div>
-
-                    <div className="relative">
-                        <input
-                            type="time"
-                            id="due-time"
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                            value={dueTime}
-                            onChange={(e) => setDueTime(e.target.value)}
-                        />
-                        <button type="button" className="touch-target text-muted-foreground hover:text-primary transition-colors">
-                            <RiTimeLine className="text-xl" />
-                        </button>
-                    </div>
+                    ))}
                 </div>
+            </div>
 
-                <button
-                    type="submit"
-                    disabled={!title.trim()}
-                    className="flex-1 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold h-12 rounded-xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 text-sm"
-                >
+            <button
+                type="submit"
+                disabled={!title.trim()}
+                className="w-full bg-primary text-white font-black h-16 rounded-[28px] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-95 transition-all fixed bottom-8 left-6 right-6 max-w-xl mx-auto"
+            >
+                <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
                     <RiAddLine className="text-xl" />
-                    Create Task
-                </button>
-            </div>
+                </div>
+                <span>Create Activity</span>
+            </button>
+            <div className="h-24" /> {/* Spacer for fixed button */}
         </form>
     );
 };
