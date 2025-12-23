@@ -6,8 +6,8 @@ import {
     RiDeleteBinLine,
     RiTimeLine,
     RiRefreshLine,
-    RiAttachment2,
-    RiCheckLine
+    RiCheckLine,
+    RiGoogleFill
 } from 'react-icons/ri';
 import { motion, useAnimation } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
@@ -59,6 +59,20 @@ const TodoItem = ({ todo, isTrash }) => {
         await deleteTodo(todo._id);
     };
 
+    const getGoogleCalendarLink = () => {
+        const title = encodeURIComponent(todo.title);
+        const description = encodeURIComponent(todo.description || '');
+        let dates = '';
+
+        if (todo.dueDate) {
+            const date = new Date(todo.dueDate);
+            const dateStr = date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+            dates = `${dateStr}/${dateStr}`;
+        }
+
+        return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${description}&dates=${dates}`;
+    };
+
     return (
         <motion.div
             {...handlers}
@@ -91,19 +105,23 @@ const TodoItem = ({ todo, isTrash }) => {
                 )}>
                     {todo.title}
                 </h3>
-                <div className="flex items-center gap-3 mt-1">
+                <div className="flex items-center gap-3 mt-1.5">
                     {todo.dueDate && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-semibold">
-                            <RiTimeLine className="text-sm" />
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
+                            <RiTimeLine className="text-xs" />
                             {new Date(todo.dueDate).toLocaleDateString()}
+                            {todo.dueTime && <span className="text-primary ml-1">{todo.dueTime}</span>}
                         </div>
                     )}
-                    {todo.attachments?.length > 0 && (
-                        <div className="flex items-center gap-1 text-[10px] text-primary/80 font-bold">
-                            <RiAttachment2 className="text-sm" />
-                            {todo.attachments.length}
-                        </div>
-                    )}
+                    <a
+                        href={getGoogleCalendarLink()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors"
+                    >
+                        <RiGoogleFill className="text-xs" />
+                        Save to Calendar
+                    </a>
                 </div>
             </div>
 

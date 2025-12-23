@@ -23,34 +23,12 @@ const todoSchema = new mongoose.Schema(
     dueDate: {
       type: Date,
     },
+    dueTime: {
+      type: String,
+    },
     reminder: {
       type: Date,
     },
-    tags: {
-      type: [String],
-      default: [],
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-    order: {
-      type: Number,
-      default: 0,
-    },
-    subTasks: [
-        {
-            title: String,
-            isCompleted: { type: Boolean, default: false }
-        }
-    ],
-    attachments: [
-        {
-            url: String,
-            publicId: String,
-            fileName: String,
-        }
-    ]
   },
   {
     timestamps: true,

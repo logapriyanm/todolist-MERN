@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useTodos } from '../context/TodoContext';
-import { RiFlag2Line, RiCalendarLine, RiPriceTag3Line, RiAddLine, RiAttachment2 } from 'react-icons/ri';
+import { RiFlag2Line, RiCalendarLine, RiPriceTag3Line, RiAddLine, RiTimeLine } from 'react-icons/ri';
 import { cn } from '../utils/cn';
 
 const AddTodo = ({ onComplete }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
-    const [attachments, setAttachments] = useState([]);
+    const [dueTime, setDueTime] = useState('');
     const { addTodo } = useTodos();
 
     const handleSubmit = async (e) => {
@@ -15,15 +15,10 @@ const AddTodo = ({ onComplete }) => {
         if (!title.trim()) return;
 
         try {
-            await addTodo({ title, description, dueDate, attachments });
+            await addTodo({ title, description, dueDate, dueTime });
             setTitle('');
             onComplete();
         } catch (error) { }
-    };
-
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        setAttachments(prev => [...prev, ...files]);
     };
 
     return (
@@ -45,48 +40,52 @@ const AddTodo = ({ onComplete }) => {
                 />
             </div>
 
-            {(dueDate || attachments.length > 0) && (
-                <div className="flex flex-wrap gap-2">
+            {(dueDate || dueTime) && (
+                <div className="flex flex-wrap gap-2 text-[10px] font-bold">
                     {dueDate && (
-                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
+                        <div className="bg-primary/10 text-primary px-3 py-1.5 rounded-full flex items-center gap-1.5">
                             <RiCalendarLine />
                             {new Date(dueDate).toLocaleDateString()}
-                            <button type="button" onClick={() => setDueDate('')} className="hover:text-primary/70 ml-1">×</button>
+                            <button type="button" onClick={() => setDueDate('')} className="hover:text-primary/70 ml-1 text-xs">×</button>
                         </div>
                     )}
-                    {attachments.map((file, i) => (
-                        <div key={i} className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
-                            <RiAttachment2 className="text-sm" />
-                            <span className="max-w-[100px] truncate">{file.name}</span>
-                            <button type="button" onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-slate-400 ml-1">×</button>
+                    {dueTime && (
+                        <div className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                            <RiTimeLine className="text-sm" />
+                            {dueTime}
+                            <button type="button" onClick={() => setDueTime('')} className="hover:text-blue-400 ml-1 text-xs">×</button>
                         </div>
-                    ))}
+                    )}
                 </div>
             )}
 
-            <div className="flex items-center gap-4 pt-4">
-                <div className="flex items-center">
-                    <input
-                        type="date"
-                        id="due-date"
-                        className="hidden"
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
-                    />
-                    <label htmlFor="due-date" className="touch-target text-muted-foreground hover:text-primary cursor-pointer transition-colors">
-                        <RiCalendarLine className="text-2xl" />
-                    </label>
+            <div className="flex items-center gap-4 pt-4 border-t border-border mt-auto">
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <input
+                            type="date"
+                            id="due-date"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                        />
+                        <button type="button" className="touch-target text-muted-foreground hover:text-primary transition-colors">
+                            <RiCalendarLine className="text-xl" />
+                        </button>
+                    </div>
 
-                    <input
-                        type="file"
-                        id="attachments"
-                        className="hidden"
-                        multiple
-                        onChange={handleFileChange}
-                    />
-                    <label htmlFor="attachments" className="touch-target text-muted-foreground hover:text-primary cursor-pointer transition-colors">
-                        <RiAttachment2 className="text-2xl" />
-                    </label>
+                    <div className="relative">
+                        <input
+                            type="time"
+                            id="due-time"
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            value={dueTime}
+                            onChange={(e) => setDueTime(e.target.value)}
+                        />
+                        <button type="button" className="touch-target text-muted-foreground hover:text-primary transition-colors">
+                            <RiTimeLine className="text-xl" />
+                        </button>
+                    </div>
                 </div>
 
                 <button

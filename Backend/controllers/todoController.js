@@ -1,6 +1,5 @@
 const Todo = require("../models/Todo");
 const { getIo } = require("../utils/socket");
-const cloudinary = require("../config/cloudinary");
 
 // @desc    Get all todos for a user
 // @route   GET /api/todos
@@ -39,20 +38,7 @@ const getTodos = async (req, res) => {
 // @access  Private
 const createTodo = async (req, res) => {
   try {
-    const { title, description, priority, dueDate, tags } = req.body;
-    let attachments = [];
-
-    if (req.files && req.files.length > 0) {
-        const uploadPromises = req.files.map(file => 
-            cloudinary.uploader.upload(file.path, { folder: "todolist_attachments" })
-        );
-        const results = await Promise.all(uploadPromises);
-        attachments = results.map((result, index) => ({
-            url: result.secure_url,
-            publicId: result.public_id,
-            fileName: req.files[index].originalname
-        }));
-    }
+    const { title, description, dueDate, dueTime, tags } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
@@ -66,11 +52,10 @@ const createTodo = async (req, res) => {
       userId: req.user._id,
       title,
       description,
-      priority,
       dueDate,
+      dueTime,
       tags,
       order,
-      attachments
     });
 
     const io = getIo();
@@ -217,14 +202,6 @@ const permanentlyDeleteTodo = async (req, res) => {
 
         if (todo.userId.toString() !== req.user._id.toString()) {
             return res.status(401).json({ message: "Not authorized" });
-        }
-
-        // Delete attachments from Cloudinary
-        if (todo.attachments && todo.attachments.length > 0) {
-            const deletePromises = todo.attachments.map(att => 
-                cloudinary.uploader.destroy(att.publicId)
-            );
-            await Promise.all(deletePromises);
         }
 
         await Todo.findByIdAndDelete(req.params.id);

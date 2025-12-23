@@ -10,11 +10,7 @@ const {
   permanentlyDeleteTodo
 } = require("../controllers/todoController");
 const { protect } = require("../middleware/authMiddleware");
-const upload = require("../middleware/uploadMiddleware");
-
-router.use(protect); // Protect all todo routes
-
-router.route("/").get(getTodos).post(upload.array("attachments", 5), createTodo);
+router.route("/").get(getTodos).post(createTodo);
 router.route("/reorder").put(reorderTodos);
 router.route("/:id").put(updateTodo).delete(deleteTodo);
 router.route("/:id/restore").put(restoreTodo);
