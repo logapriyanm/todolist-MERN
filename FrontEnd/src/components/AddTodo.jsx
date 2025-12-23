@@ -16,20 +16,46 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
         }
         return initialDate || '';
     });
-    const [dueTime, setDueTime] = useState(initialTodo?.dueTime || '');
-    const [category, setCategory] = useState(initialTodo?.category || 'Work');
-    const { addTodo, updateTodo } = useTodos();
 
+    // Time states for 12h format
+    const [hour, setHour] = useState(() => {
+        if (initialTodo?.dueTime) {
+            const h = parseInt(initialTodo.dueTime.split(':')[0]);
+            return (h % 12 || 12).toString().padStart(2, '0');
+        }
+        return '12';
+    });
+    const [minute, setMinute] = useState(() => {
+        if (initialTodo?.dueTime) {
+            return initialTodo.dueTime.split(':')[1];
+        }
+        return '00';
+    });
+    const [ampm, setAmpm] = useState(() => {
+        if (initialTodo?.dueTime) {
+            const h = parseInt(initialTodo.dueTime.split(':')[0]);
+            return h >= 12 ? 'PM' : 'AM';
+        }
+        return 'AM';
+    });
+
+    const { addTodo, updateTodo } = useTodos();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) return;
 
+        // Convert back to 24h format for the backend
+        let h = parseInt(hour);
+        if (ampm === 'PM' && h < 12) h += 12;
+        if (ampm === 'AM' && h === 12) h = 0;
+        const dueTime = `${h.toString().padStart(2, '0')}:${minute}`;
+
         try {
             if (initialTodo) {
-                await updateTodo(initialTodo._id, { title, description, dueDate, dueTime, category });
+                await updateTodo(initialTodo._id, { title, description, dueDate, dueTime, category: initialTodo.category });
             } else {
-                await addTodo({ title, description, dueDate, dueTime, category });
+                await addTodo({ title, description, dueDate, dueTime, category: 'Work' });
             }
             setTitle('');
             onComplete();
@@ -40,7 +66,6 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
-
             <div className="space-y-4">
                 <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Task Title</label>
@@ -63,7 +88,7 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Due Date</label>
                     <div className="relative">
@@ -78,14 +103,58 @@ const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
                 </div>
                 <div className="space-y-2">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Due Time</label>
-                    <div className="relative">
-                        <RiTimeLine className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="time"
-                            value={dueTime}
-                            onChange={(e) => setDueTime(e.target.value)}
-                            className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 rounded-3xl p-5 pl-12 font-bold text-slate-800 transition-all outline-none"
-                        />
+                    <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                            <RiTimeLine className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                            <div className="flex bg-slate-50 rounded-3xl items-center border-2 border-transparent focus-within:border-primary/20 transition-all overflow-hidden pl-10">
+                                <input
+                                    type="text"
+                                    value={hour}
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                                        if (parseInt(val) <= 12 || val === '') setHour(val);
+                                    }}
+                                    onBlur={() => {
+                                        if (!hour || parseInt(hour) === 0) setHour('12');
+                                        else setHour(hour.padStart(2, '0'));
+                                    }}
+                                    className="w-12 bg-transparent p-5 text-center font-bold text-slate-800 outline-none"
+                                    placeholder="HH"
+                                />
+                                <span className="font-bold text-slate-400">:</span>
+                                <input
+                                    type="text"
+                                    value={minute}
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                                        if (parseInt(val) < 60 || val === '') setMinute(val);
+                                    }}
+                                    onBlur={() => {
+                                        if (!minute) setMinute('00');
+                                        else setMinute(minute.padStart(2, '0'));
+                                    }}
+                                    className="w-12 bg-transparent p-5 text-center font-bold text-slate-800 outline-none"
+                                    placeholder="MM"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex bg-slate-50 border-2 border-transparent rounded-2xl p-1 shrink-0">
+                            {['AM', 'PM'].map((mode) => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setAmpm(mode)}
+                                    className={cn(
+                                        "px-4 py-2 rounded-xl text-xs font-black transition-all",
+                                        ampm === mode
+                                            ? "bg-white text-primary shadow-sm"
+                                            : "text-slate-400 hover:text-slate-600"
+                                    )}
+                                >
+                                    {mode}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

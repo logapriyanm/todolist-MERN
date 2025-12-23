@@ -59,22 +59,14 @@ const Dashboard = () => {
             setFilter={setFilter}
             onAddClick={() => setIsAddOpen(true)}
         >
-            <div className="-mx-4 -mt-2 mb-6 bg-primary p-4 pt-6 rounded-b-[32px] shadow-2xl shadow-primary/20 relative overflow-hidden">
+            <div className="-mx-4 -mt-6   bg-primary p-4 shadow-2xl mb-3 shadow-primary/20 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24 blur-2xl pointer-events-none" />
 
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-10 h-10" /> {/* Placeholder for alignment */}
-                        <h2 className="text-white font-bold text-lg">
-                            {selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </h2>
-                        <button className="text-white/80 hover:text-white transition-colors">
-                            <RiLogoutBoxLine className="text-xl" onClick={logout} />
-                        </button>
-                    </div>
+                  
 
-                    <div className="flex items-end justify-between">
+                    <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl font-black text-white tracking-tight leading-tight">{dateLabel}</h1>
                             <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">
@@ -87,6 +79,9 @@ const Dashboard = () => {
                         >
                             Add New
                         </button>
+                        <button className="text-white/80 hover:text-white transition-colors">
+                            <RiLogoutBoxLine className="text-xl" onClick={logout} />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -97,7 +92,7 @@ const Dashboard = () => {
                         key={d.toISOString()}
                         onClick={() => setSelectedDate(d)}
                         className={cn(
-                            "flex flex-col items-center justify-center min-w-[64px] h-20 rounded-2xl transition-all border shrink-0",
+                            "flex flex-col items-center justify-center p-2 rounded-l transition-all ",
                             selectedDate.toDateString() === d.toDateString()
                                 ? "bg-primary text-white border-primary shadow-xl shadow-primary/20 scale-110 z-10"
                                 : "bg-white text-muted-foreground border-transparent shadow-sm hover:border-slate-200"
@@ -111,9 +106,9 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            <div className="relative pl-8 mt-8 space-y-4 pb-24">
+            <div className="relative  space-y-4 ">
                 {/* Timeline Line */}
-                <div className="absolute left-[7px] top-2 bottom-24 w-0.5 bg-slate-100" />
+                {/* <div className="absolute left-[7px] top-2 bottom-24 w-0.5 bg-slate-100" /> */}
 
                 {loading ? (
                     [1, 2, 3].map(i => (
