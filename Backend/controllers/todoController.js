@@ -33,6 +33,31 @@ const getTodos = async (req, res) => {
   }
 };
 
+// @desc    Get single todo
+// @route   GET /api/todos/:id
+// @access  Private
+const getTodoById = async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
+
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    if (todo.userId.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    res.json(todo);
+  } catch (error) {
+    console.error(error);
+    if (error.kind === 'ObjectId') {
+        return res.status(404).json({ message: "Todo not found" });
+    }
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 // @desc    Create a new todo
 // @route   POST /api/todos
 // @access  Private
@@ -218,6 +243,7 @@ const permanentlyDeleteTodo = async (req, res) => {
 
 module.exports = {
   getTodos,
+  getTodoById,
   createTodo,
   updateTodo,
   deleteTodo,

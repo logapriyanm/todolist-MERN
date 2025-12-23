@@ -57,18 +57,7 @@ export const TodoProvider = ({ children }) => {
 
     const addTodo = async (todoData) => {
         try {
-            const formData = new FormData();
-            Object.keys(todoData).forEach(key => {
-                if (key === 'attachments') {
-                    todoData[key].forEach(file => formData.append('attachments', file));
-                } else {
-                    formData.append(key, todoData[key]);
-                }
-            });
-
-            const { data } = await api.post('/todos', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const { data } = await api.post('/todos', todoData);
             return data;
         } catch (error) {
             toast.error('Failed to add todo');
