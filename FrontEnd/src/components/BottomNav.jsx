@@ -1,14 +1,12 @@
 import React from 'react';
-import { RiCalendarTodoLine, RiFileList2Line, RiBarChartLine, RiUserLine, RiAddLine } from 'react-icons/ri';
+import { RiCalendarTodoLine, RiFileListLine, RiBarChartLine, RiUserLine, RiAddLine } from 'react-icons/ri';
 import { cn } from '../utils/cn';
 
 const BottomNav = ({ activeTab, onTabChange, onAddClick }) => {
     const tabs = [
         { id: 'all', icon: RiCalendarTodoLine, label: 'Today' },
-        { id: 'active', icon: RiFileList2Line, label: 'Active' },
+        { id: 'active', icon: RiFileListLine, label: 'Active' },
         { id: 'add', isFab: true },
-        { id: 'stats', icon: RiBarChartLine, label: 'Stats' },
-        { id: 'profile', icon: RiUserLine, label: 'Profile' },
     ];
 
     return (

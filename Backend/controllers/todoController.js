@@ -8,7 +8,7 @@ const getTodos = async (req, res) => {
   try {
     const { status, priority, search, sortBy, sortOrder } = req.query;
 
-    let query = { userId: req.user._id, isDeleted: false };
+    let query = { userId: req.user._id };
 
     // Filtering
     if (status) query.status = status;
@@ -85,7 +85,7 @@ const createTodo = async (req, res) => {
     });
 
     const io = getIo();
-    io.emit("todo_created", todo);
+    io.to(req.user._id.toString()).emit("todo_created", todo);
 
     res.status(201).json(todo);
   } catch (error) {
@@ -121,7 +121,7 @@ const updateTodo = async (req, res) => {
     });
 
     const io = getIo();
-    io.emit("todo_updated", updatedTodo);
+    io.to(req.user._id.toString()).emit("todo_updated", updatedTodo);
 
     res.json(updatedTodo);
   } catch (error) {
@@ -151,7 +151,7 @@ const deleteTodo = async (req, res) => {
     await todo.save();
 
     const io = getIo();
-    io.emit("todo_deleted", req.params.id);
+    io.to(req.user._id.toString()).emit("todo_deleted", req.params.id);
 
     res.json({ message: "Todo moved to trash" });
   } catch (error) {
@@ -178,7 +178,7 @@ const reorderTodos = async (req, res) => {
         await Promise.all(updatePromises);
         
         const io = getIo();
-        io.emit("todos_reordered", newOrder);
+        io.to(req.user._id.toString()).emit("todos_reordered", newOrder);
 
         res.json({ message: "Reordered successfully" });
     } catch (error) {
@@ -206,7 +206,7 @@ const restoreTodo = async (req, res) => {
         await todo.save();
 
         const io = getIo();
-        io.emit("todo_restored", todo);
+        io.to(req.user._id.toString()).emit("todo_restored", todo);
 
         res.json(todo);
     } catch (error) {
@@ -233,7 +233,7 @@ const permanentlyDeleteTodo = async (req, res) => {
         await Todo.findByIdAndDelete(req.params.id);
 
         const io = getIo();
-        io.emit("todo_permanently_deleted", req.params.id);
+        io.to(req.user._id.toString()).emit("todo_permanently_deleted", req.params.id);
 
         res.json({ message: "Todo permanently deleted" });
     } catch (error) {

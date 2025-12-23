@@ -3,7 +3,7 @@ import BottomNav from './BottomNav';
 import { cn } from '../utils/cn';
 import {
     RiCalendarTodoLine,
-    RiFileList2Line,
+    RiFileListLine,
     RiBarChartLine,
     RiDeleteBinLine,
     RiAddLine,
@@ -27,7 +27,7 @@ const Layout = ({ children, currentFilter, setFilter, onAddClick }) => {
                 <nav className="flex-1 space-y-2">
                     {[
                         { id: 'all', label: 'All Tasks', icon: RiCalendarTodoLine },
-                        { id: 'active', label: 'Active', icon: RiFileList2Line },
+                        { id: 'active', label: 'Active', icon: RiFileListLine },
                         { id: 'completed', label: 'Done', icon: RiBarChartLine },
                         { id: 'trash', label: 'Trash', icon: RiDeleteBinLine },
                     ].map((item) => (
@@ -48,13 +48,6 @@ const Layout = ({ children, currentFilter, setFilter, onAddClick }) => {
                 </nav>
 
                 <div className="pt-6 border-t border-border space-y-4">
-                    <button
-                        onClick={() => onAddClick?.()}
-                        className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                    >
-                        <RiAddLine className="text-2xl" />
-                        Create Task
-                    </button>
 
                     <div className="flex items-center gap-3 p-2 bg-secondary/50 rounded-2xl">
                         <div className="w-10 h-10 bg-white border border-border rounded-xl flex items-center justify-center font-bold text-primary">

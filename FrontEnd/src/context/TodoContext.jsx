@@ -34,6 +34,10 @@ export const TodoProvider = ({ children }) => {
             });
             setSocket(newSocket);
 
+            newSocket.on('connect', () => {
+                newSocket.emit('join', user._id);
+            });
+
             newSocket.on('todo_created', (newTodo) => {
                 setTodos((prev) => {
                     if (prev.find(t => t._id === newTodo._id)) return prev;
@@ -46,7 +50,7 @@ export const TodoProvider = ({ children }) => {
             });
 
             newSocket.on('todo_deleted', (id) => {
-                setTodos((prev) => prev.filter((t) => t._id !== id));
+                setTodos((prev) => prev.map((t) => (t._id === id ? { ...t, isDeleted: true } : t)));
             });
 
             newSocket.on('todo_restored', (restoredTodo) => {
@@ -75,7 +79,10 @@ export const TodoProvider = ({ children }) => {
     const addTodo = async (todoData) => {
         try {
             const { data } = await api.post('/todos', todoData);
-            // Socket will handle state update
+            setTodos((prev) => {
+                if (prev.find(t => t._id === data._id)) return prev;
+                return [data, ...prev];
+            });
             return data;
         } catch (error) {
             toast.error('Failed to add todo');
@@ -86,7 +93,7 @@ export const TodoProvider = ({ children }) => {
     const updateTodo = async (id, updateData) => {
         try {
             const { data } = await api.put(`/todos/${id}`, updateData);
-            // Socket will handle state update
+            setTodos((prev) => prev.map((t) => (t._id === data._id ? data : t)));
             return data;
         } catch (error) {
             toast.error('Failed to update todo');
@@ -97,6 +104,7 @@ export const TodoProvider = ({ children }) => {
     const deleteTodo = async (id) => {
         try {
             await api.delete(`/todos/${id}`);
+            setTodos((prev) => prev.map((t) => (t._id === id ? { ...t, isDeleted: true } : t)));
             toast.success('Todo moved to trash');
         } catch (error) {
             toast.error('Failed to delete todo');
@@ -115,6 +123,7 @@ export const TodoProvider = ({ children }) => {
     const permanentlyDeleteTodo = async (id) => {
         try {
             await api.delete(`/todos/${id}/permanent`);
+            setTodos((prev) => prev.filter((t) => t._id !== id));
             toast.success('Todo permanently deleted');
         } catch (error) {
             toast.error('Failed to permanently delete todo');

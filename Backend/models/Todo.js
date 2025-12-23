@@ -30,6 +30,14 @@ const todoSchema = new mongoose.Schema(
       type: String,
       default: 'Work',
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    order: {
+      type: Number,
+      default: 0,
+    },
     reminder: {
       type: Date,
     },

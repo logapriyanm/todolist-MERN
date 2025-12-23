@@ -4,23 +4,29 @@ import {
     RiCheckboxCircleFill,
     RiCheckboxBlankCircleLine,
     RiDeleteBinLine,
-    RiTimeLine,
-    RiRefreshLine,
     RiCheckLine,
-    RiGoogleFill,
-    RiFileList2Line,
+    RiFileListLine,
     RiPriceTag3Line,
-    RiFlag2Line
+    RiFlag2Line,
+    RiEditLine
 } from 'react-icons/ri';
-import { motion, useAnimation } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
 import { gsap } from 'gsap';
 import { cn } from '../utils/cn';
 
-const TodoItem = ({ todo, isTrash, isActive }) => {
-    const { updateTodo, deleteTodo, restoreTodo, permanentlyDeleteTodo } = useTodos();
-    const controls = useAnimation();
+const TodoItem = ({ todo, isTrash, isActive, onEdit }) => {
     const itemRef = useRef(null);
+    const { updateTodo, deleteTodo, restoreTodo, permanentlyDeleteTodo } = useTodos();
+
+    const formatTimeTo12h = (time) => {
+        if (!time) return '';
+        const [hours, minutes] = time.split(':');
+        let h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return `${h}:${minutes} ${ampm}`;
+    };
 
     const handleVibrate = (strength = 10) => {
         if (window.navigator.vibrate) {
@@ -59,11 +65,16 @@ const TodoItem = ({ todo, isTrash, isActive }) => {
 
     const handleDelete = async () => {
         handleVibrate(40);
-        await deleteTodo(todo._id);
+        if (isTrash) {
+            await permanentlyDeleteTodo(todo._id);
+        } else {
+            // User requested permanent delete from all
+            await permanentlyDeleteTodo(todo._id);
+        }
     };
 
     const categories = {
-        Work: { icon: RiFileList2Line, color: 'text-indigo-600' },
+        Work: { icon: RiFileListLine, color: 'text-indigo-600' },
         Food: { icon: RiPriceTag3Line, color: 'text-orange-500' },
         Sport: { icon: RiFlag2Line, color: 'text-emerald-500' },
         Idea: { icon: RiFlag2Line, color: 'text-amber-500' }, // Placeholder icons
@@ -79,21 +90,13 @@ const TodoItem = ({ todo, isTrash, isActive }) => {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-start gap-4 group relative"
         >
-            {/* Time Indicator */}
-            <div className="w-16 pt-3 flex flex-col items-end gap-1 shrink-0">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
-                    {todo.dueTime || '10:30'}
-                </span>
-                <span className="text-[8px] font-bold text-slate-300 uppercase">
-                    1 hour
-                </span>
-            </div>
 
             {/* Timeline Node */}
             <div className="absolute left-[7px] top-4 w-2 h-2 rounded-full border-2 border-primary bg-white z-10 shadow-sm" />
 
             {/* Content Card */}
             <div
+                ref={itemRef}
                 className={cn(
                     "flex-1 p-5 rounded-[24px] border transition-all relative overflow-hidden",
                     isActive
@@ -127,16 +130,38 @@ const TodoItem = ({ todo, isTrash, isActive }) => {
 
                 <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-2">
-                        <category.icon className={cn("text-xs", isActive ? "text-white/70" : category.color)} />
                         <span className={cn("text-[10px] font-bold", isActive ? "text-white/60" : "text-slate-400")}>
-                            {todo.dueTime || '10:30'} - 11:30
+                            {formatTimeTo12h(todo.dueTime)}
                         </span>
                     </div>
-                    {isTrash && (
-                        <button onClick={handleDelete} className="text-rose-500 hover:scale-110 transition-transform">
+                    <div className="flex items-center gap-1">
+                        {!isTrash && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit(todo);
+                                }}
+                                className={cn(
+                                    "transition-transform hover:scale-110 p-1 rounded-lg",
+                                    isActive ? "text-white/60 hover:text-white" : "text-slate-300 hover:text-primary"
+                                )}
+                            >
+                                <RiEditLine className="text-lg" />
+                            </button>
+                        )}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete();
+                            }}
+                            className={cn(
+                                "transition-transform hover:scale-110 p-1 rounded-lg",
+                                isTrash ? "text-rose-500" : isActive ? "text-white/60 hover:text-white" : "text-slate-300 hover:text-rose-500"
+                            )}
+                        >
                             <RiDeleteBinLine className="text-lg" />
                         </button>
-                    )}
+                    </div>
                 </div>
 
                 {isActive && (

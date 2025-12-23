@@ -1,99 +1,105 @@
 import React, { useState } from 'react';
 import { useTodos } from '../context/TodoContext';
-import { RiFlag2Line, RiCalendarLine, RiPriceTag3Line, RiAddLine, RiTimeLine, RiFileList2Line } from 'react-icons/ri';
+import { RiCalendarLine, RiAddLine, RiTimeLine, RiEditLine } from 'react-icons/ri';
 import { cn } from '../utils/cn';
 
-const AddTodo = ({ onComplete }) => {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [dueTime, setDueTime] = useState('');
-    const [category, setCategory] = useState('Work');
-    const { addTodo } = useTodos();
+const AddTodo = ({ onComplete, initialDate, initialTodo }) => {
+    const [title, setTitle] = useState(initialTodo?.title || '');
+    const [description, setDescription] = useState(initialTodo?.description || '');
+    const [dueDate, setDueDate] = useState(() => {
+        if (initialTodo?.dueDate) {
+            try {
+                return new Date(initialTodo.dueDate).toISOString().split('T')[0];
+            } catch (e) {
+                return '';
+            }
+        }
+        return initialDate || '';
+    });
+    const [dueTime, setDueTime] = useState(initialTodo?.dueTime || '');
+    const [category, setCategory] = useState(initialTodo?.category || 'Work');
+    const { addTodo, updateTodo } = useTodos();
 
-    const activityCategories = [
-        { id: 'Idea', icon: RiPriceTag3Line, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { id: 'Food', icon: RiPriceTag3Line, color: 'text-orange-500', bg: 'bg-orange-50' },
-        { id: 'Work', icon: RiFileList2Line, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-        { id: 'Sport', icon: RiFlag2Line, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-        { id: 'Music', icon: RiFlag2Line, color: 'text-purple-500', bg: 'bg-purple-50' },
-    ];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) return;
 
         try {
-            await addTodo({ title, description, dueDate, dueTime, category });
+            if (initialTodo) {
+                await updateTodo(initialTodo._id, { title, description, dueDate, dueTime, category });
+            } else {
+                await addTodo({ title, description, dueDate, dueTime, category });
+            }
             setTitle('');
             onComplete();
-        } catch (error) { }
+        } catch (error) {
+            console.error('Add/Update todo error:', error);
+        }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="flex gap-4 overflow-x-auto pb-6 hide-scrollbar px-1 no-scrollbar">
-                {[5, 6, 7, 8, 9].map(d => (
-                    <div
-                        key={d}
-                        className={cn(
-                            "flex flex-col items-center justify-center min-w-[64px] h-20 rounded-2xl transition-all border shrink-0",
-                            d === 5 ? "bg-primary text-white border-primary shadow-xl" : "bg-white text-slate-400 border-slate-100"
-                        )}
-                    >
-                        <span className="text-xl font-black">{d}</span>
-                        <span className="text-[10px] font-bold uppercase opacity-60">Mon</span>
-                    </div>
-                ))}
+
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Task Title</label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="What needs to be done?"
+                        className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 rounded-3xl p-5 font-bold text-slate-800 placeholder:text-slate-300 transition-all outline-none"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Description</label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Add more details..."
+                        className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 rounded-3xl p-5 font-medium text-slate-600 placeholder:text-slate-300 transition-all outline-none min-h-[120px] resize-none"
+                    />
+                </div>
             </div>
 
-            <div className="space-y-6">
-                <h3 className="text-lg font-black text-slate-800">Chose activity</h3>
-                <div className="space-y-3">
-                    {activityCategories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => {
-                                setCategory(cat.id);
-                                setTitle(cat.id); // Default title to category for demo
-                            }}
-                            className={cn(
-                                "w-full flex items-center justify-between p-5 rounded-3xl border transition-all group",
-                                category === cat.id
-                                    ? "bg-primary border-primary text-white"
-                                    : "bg-slate-50 border-transparent text-slate-800 hover:border-slate-200"
-                            )}
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className={cn(
-                                    "w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm",
-                                    category === cat.id ? "bg-white/20" : cat.bg
-                                )}>
-                                    <cat.icon className={cn("text-xl", category === cat.id ? "text-white" : cat.color)} />
-                                </div>
-                                <div className="text-left">
-                                    <p className={cn("font-black", category === cat.id ? "text-white" : "text-slate-800")}>{cat.id}</p>
-                                    <p className={cn("text-[10px] font-bold uppercase tracking-widest", category === cat.id ? "text-white/60" : "text-slate-400")}>3 on this week</p>
-                                </div>
-                            </div>
-                            <RiAddLine className={cn("text-xl transition-transform group-hover:scale-110", category === cat.id ? "text-white" : "text-slate-300")} />
-                        </button>
-                    ))}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Due Date</label>
+                    <div className="relative">
+                        <RiCalendarLine className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                            type="date"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                            className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 rounded-3xl p-5 pl-12 font-bold text-slate-800 transition-all outline-none"
+                        />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Due Time</label>
+                    <div className="relative">
+                        <RiTimeLine className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                            type="time"
+                            value={dueTime}
+                            onChange={(e) => setDueTime(e.target.value)}
+                            className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 rounded-3xl p-5 pl-12 font-bold text-slate-800 transition-all outline-none"
+                        />
+                    </div>
                 </div>
             </div>
 
             <button
                 type="submit"
                 disabled={!title.trim()}
-                className="w-full bg-primary text-white font-black h-16 rounded-[28px] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-95 transition-all fixed bottom-8 left-6 right-6 max-w-xl mx-auto"
+                className="w-full bg-primary text-white font-black h-16 rounded-[28px] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-95 transition-all mt-8"
             >
                 <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
-                    <RiAddLine className="text-xl" />
+                    {initialTodo ? <RiEditLine className="text-xl" /> : <RiAddLine className="text-xl" />}
                 </div>
-                <span>Create Activity</span>
+                <span>{initialTodo ? 'Update Activity' : 'Create Activity'}</span>
             </button>
-            <div className="h-24" /> {/* Spacer for fixed button */}
         </form>
     );
 };
